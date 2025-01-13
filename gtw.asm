@@ -67,6 +67,7 @@ global gt_w_write
 global gt_w_read
 global gt_w_close
 global gt_w_openat
+global gt_w_fsync
 global gt_w_send_datum_back
 
 
@@ -1209,4 +1210,32 @@ gt_w_openat:
   add rsp,56
 
   jmp _make_call
+
+
+gt_w_fsync:
+  ; rdi -> worker
+  ; esi -> fd
+  sub rsp,8
+
+  xor eax,eax
+  push rax
+
+  shl rsi,32
+  or rsi,3 ; fsync
+  push rsi
+
+  movdqa xmm0,[rsp]
+  pxor xmm1,xmm1
+
+  push rax
+  push rdi
+  movdqa xmm2,[rsp]
+
+  pxor xmm3,xmm3
+
+  add rsp,40
+
+  jmp _make_call
+
+
 

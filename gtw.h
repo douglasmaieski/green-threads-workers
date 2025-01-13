@@ -101,8 +101,10 @@ long gt_w_openat(struct gt_w *w,
                  int flags,
                  long mode); 
 
+// just like fsync()
+long gt_w_fsync(struct gt_w *w, int fd);
+
 /* TODO:
-fsync
 socket
 connect
 accept
