@@ -29,7 +29,8 @@ GT_WM_IN_HEAD: equ 16
 GT_WM_OUT_TAIL: equ 24
 GT_WM_OUT_HEAD: equ 32
 GT_WM_WGM_PTR: equ 40
-; FREE_SPACE: 16 bytes
+GT_WM_USER_DATUM: equ 48
+; FREE_SPACE: 8 bytes
 GT_WM_SAVED_REGISTERS: equ 64
 GT_WM_NEXT_INSTRUCTION: equ 96 ; this is inside the saved registers
 GT_WM_QUEUE_IN: equ 256
@@ -59,6 +60,8 @@ global gt_wgm_submit_work
 global gt_wgm_work
 global gt_wgm_get_datum_back
 global gt_wm_work
+global gt_wm_set_user_datum
+global gt_w_get_wm_datum
 global gt_w_return
 global gt_w_write
 global gt_w_read
@@ -678,6 +681,13 @@ _restore_regs:
   jmp [rdi+GT_WM_NEXT_INSTRUCTION]
 
 
+gt_wm_set_user_datum:
+  ; rdi -> wm
+  ; rsi -> datum
+  mov [rdi+GT_WM_USER_DATUM],rsi
+  ret
+
+
 gt_wm_work:
   ; rdi -> wm 
 
@@ -795,6 +805,13 @@ gt_wm_work:
   mov [rdi+GT_WM_OUT_HEAD],rsi
 
   jmp .continue_depleting
+
+
+gt_w_get_wm_datum:
+  ; rdi -> worker
+  mov rsi,[rdi+GT_W_PARENT_WM]
+  mov rax,[rsi+GT_WM_USER_DATUM]
+  ret
 
 
 gt_w_return:

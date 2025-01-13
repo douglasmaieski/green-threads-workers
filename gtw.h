@@ -62,6 +62,13 @@ void gt_wgm_work(struct gt_wgm *wgm);
 // this should run on its own thread
 void gt_wm_work(struct gt_wm *wm);
 
+// set whatever value is useful to the wm
+// useful to pool db connections
+void gt_wm_set_user_datum(struct gt_wm *wm, union gt_datum datum);
+
+// retrieve the work group datum
+union gt_datum gt_w_get_wm_datum(struct gt_w *w);
+
 // finish running a given work
 void gt_w_return(struct gt_w *w);
 
