@@ -104,8 +104,10 @@ long gt_w_openat(struct gt_w *w,
 // just like fsync()
 long gt_w_fsync(struct gt_w *w, int fd);
 
+// just like socket()
+long gt_w_socket(struct gt_w *w, int domain, int type, int protocol);
+
 /* TODO:
-socket
 connect
 accept
 send
