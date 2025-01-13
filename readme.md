@@ -4,6 +4,25 @@ This is a small, easy-to-use, green threads library written in assembly for amd6
 
 The return codes come from the kernel, so you should use -code to get the correct errno.
 
+## Building
+
+You'll need `nasm` to build the object file:
+
+```bash
+nasm -felf64 gtw.asm -o gtw.o
+```
+
+## Using it
+
+You can include the `gtw.h` header in your project.
+
+After building the object file, you can include it in your project:
+
+```bash
+gcc sample.c io_uring.o gtw.o -O3 -o sample_test -no-pie
+```
+
+Don't forget: https://github.com/douglasmaieski/io-uring-amd64
 
 ## Use cases
 
