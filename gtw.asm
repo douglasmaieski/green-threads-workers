@@ -66,6 +66,7 @@ global gt_w_return
 global gt_w_write
 global gt_w_read
 global gt_w_close
+global gt_w_openat
 global gt_w_send_datum_back
 
 
@@ -1047,7 +1048,9 @@ gt_w_read:
   jmp _io_rw
 
 
-gt_w_close:
+_make_call:
+  ; receive data in:
+  ; xmm0, xmm1, xmm2, xmm3
   push rbp
   push rbx
   push r12
@@ -1073,19 +1076,10 @@ gt_w_close:
   shl r12,6
   lea r11,[rax+GT_WM_QUEUE_OUT+r12]
 
-  pxor xmm0,xmm0
   movdqa [r11],xmm0
-  movdqa [r11+16],xmm0
-  movdqa [r11+32],xmm0
-  movdqa [r11+48],xmm0
-
-  ; opcode + fd
-  shl rsi,32
-  or rsi,19 ; close
-  mov [r11],rsi
-
-  ; user data
-  mov [r11+32],rdi
+  movdqa [r11+16],xmm1
+  movdqa [r11+32],xmm2
+  movdqa [r11+48],xmm3
 
   ; go to another process
   mov qword [rdi+GT_W_INSTRUCTION_PTR],.done
@@ -1151,3 +1145,68 @@ gt_w_send_datum_back:
 .queue_full:
   mov rax,-128000
   ret
+
+
+gt_w_close:
+  ; align to 16
+  sub rsp,8
+
+  xor eax,eax
+  push rax
+
+  shl rsi,32
+  or rsi,19 ; close
+  push rsi
+
+  movdqa xmm0,[rsp]
+
+  pxor xmm1,xmm1
+
+  push rax
+  push rdi
+  movdqa xmm2,[rsp]
+
+  pxor xmm3,xmm3
+
+  add rsp,40
+
+  jmp _make_call
+  
+
+gt_w_openat:
+  ; rdi -> worker
+  ; esi -> dirfd
+  ; rdx -> pathname
+  ; ecx -> flags
+  ; r8  -> mode
+  sub rsp,8
+
+  xor eax,eax
+  push rax
+
+  ; opcode + fd + offset
+  shl rsi,32
+  or rsi,18 ; openat
+  push rsi
+  movdqa xmm0,[rsp]
+
+  ; addr + len + flags
+  sub rsp,8
+
+  mov [rsp],r8d
+
+  mov [rsp+4],ecx
+
+  push rdx
+  movdqa xmm1,[rsp]
+
+  push rax
+  push rdi
+  movdqa xmm2,[rsp]
+
+  pxor xmm3,xmm3
+
+  add rsp,56
+
+  jmp _make_call
+

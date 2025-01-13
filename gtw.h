@@ -94,8 +94,14 @@ long gt_w_write(struct gt_w *w,
 // similar to close()
 long gt_w_close(struct gt_w *w, int fd);
 
+// similar to openat()
+long gt_w_openat(struct gt_w *w, 
+                 int dirfd,
+                 const char *pathname,
+                 int flags,
+                 long mode); 
+
 /* TODO:
-openat
 fsync
 socket
 connect
