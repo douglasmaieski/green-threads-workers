@@ -108,13 +108,21 @@ long gt_w_fsync(struct gt_w *w, int fd);
 // just like socket()
 long gt_w_socket(struct gt_w *w, int domain, int type, int protocol);
 
+// just like connect()
 long gt_w_connect(struct gt_w *w,
                   int sockfd,
                   const struct sockaddr *addr,
                   socklen_t addrlen);
 
+// just like accept4()
+long gt_w_accept(struct gt_w *w,
+                 int sockfd,
+                 struct sockaddr *addr,
+                 socklen_t *addrlen,
+                 int flags);
+
+
 /* TODO:
-accept
 send
 sendmsg
 recv

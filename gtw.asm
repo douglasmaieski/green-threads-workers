@@ -70,6 +70,7 @@ global gt_w_openat
 global gt_w_fsync
 global gt_w_socket
 global gt_w_connect
+global gt_w_accept
 global gt_w_send_datum_back
 
 
@@ -1247,3 +1248,24 @@ gt_w_connect:
   jmp _make_call
 
   
+gt_w_accept:
+  ; rdi -> worker
+  ; esi -> sockfd
+  ; rdx -> addr
+  ; rcx -> addrlen
+  ; r8d -> flags
+  shl rsi,32
+  or rsi,13 ; accept
+  movq xmm0,rsi
+  pinsrq xmm0,rcx,1
+
+  movq xmm1,rdx
+  pinsrq xmm1,r8,1
+
+  movq xmm2,rdi
+
+  pxor xmm3,xmm3
+
+  jmp _make_call
+
+
