@@ -1151,27 +1151,15 @@ gt_w_send_datum_back:
 
 
 gt_w_close:
-  ; align to 16
-  sub rsp,8
-
-  xor eax,eax
-  push rax
-
   shl rsi,32
   or rsi,19 ; close
-  push rsi
-
-  movdqa xmm0,[rsp]
+  movq xmm0,rsi
 
   pxor xmm1,xmm1
 
-  push rax
-  push rdi
-  movdqa xmm2,[rsp]
+  movq xmm2,rdi
 
   pxor xmm3,xmm3
-
-  add rsp,40
 
   jmp _make_call
   
@@ -1182,34 +1170,21 @@ gt_w_openat:
   ; rdx -> pathname
   ; ecx -> flags
   ; r8  -> mode
-  sub rsp,8
-
-  xor eax,eax
-  push rax
-
   ; opcode + fd + offset
+
   shl rsi,32
   or rsi,18 ; openat
-  push rsi
-  movdqa xmm0,[rsp]
+  movq xmm0,rsi
 
-  ; addr + len + flags
-  sub rsp,8
+  shl rcx,32
+  or rcx,r8
 
-  mov [rsp],r8d
+  movq xmm1,rdx
+  pinsrq xmm1,rcx,1
 
-  mov [rsp+4],ecx
-
-  push rdx
-  movdqa xmm1,[rsp]
-
-  push rax
-  push rdi
-  movdqa xmm2,[rsp]
+  movq xmm2,rdi
 
   pxor xmm3,xmm3
-
-  add rsp,56
 
   jmp _make_call
 
@@ -1217,25 +1192,15 @@ gt_w_openat:
 gt_w_fsync:
   ; rdi -> worker
   ; esi -> fd
-  sub rsp,8
-
-  xor eax,eax
-  push rax
-
   shl rsi,32
   or rsi,3 ; fsync
-  push rsi
+  movq xmm0,rsi
 
-  movdqa xmm0,[rsp]
   pxor xmm1,xmm1
 
-  push rax
-  push rdi
-  movdqa xmm2,[rsp]
+  movq xmm2,rdi
 
   pxor xmm3,xmm3
-
-  add rsp,40
 
   jmp _make_call
 
@@ -1245,29 +1210,19 @@ gt_w_socket:
   ; esi -> domain
   ; edx -> type
   ; ecx -> protocol
-  sub rsp,8
-
-  push rdx
 
   shl rsi,32
   or rsi,45 ; socket
-  push rsi
 
-  movdqa xmm0,[rsp]
+  movq xmm0,rsi
+  pinsrq xmm0,rdx,1
 
-  push rcx
-  xor eax,eax
-  push rax
+  pxor xmm1,xmm1
+  pinsrq xmm1,rcx,1
 
-  movdqa xmm1,[rsp]
-
-  push rax
-  push rdi
-  movdqa xmm2,[rsp]
+  movq xmm2,rdi
 
   pxor xmm3,xmm3
-
-  add rsp,56
 
   jmp _make_call
 
@@ -1277,28 +1232,17 @@ gt_w_connect:
   ; esi -> sockfd
   ; rdx -> addr
   ; rcx -> addrlen
-  sub rsp,8
-
-  push rcx
-
   shl rsi,32
   or rsi,16 ; connect
-  push rsi
+  movq xmm0,rsi
 
-  movdqa xmm0,[rsp]
+  pinsrq xmm0,rcx,1
 
-  xor eax,eax
-  push rax
-  push rdx
-  movdqa xmm1,[rsp]
+  movq xmm1,rdx
 
-  push rax
-  push rdi
-  movdqa xmm2,[rsp]
+  movq xmm2,rdi
 
   pxor xmm3,xmm3
-
-  add rsp,56
 
   jmp _make_call
 
