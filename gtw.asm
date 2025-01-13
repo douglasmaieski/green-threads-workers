@@ -69,6 +69,7 @@ global gt_w_close
 global gt_w_openat
 global gt_w_fsync
 global gt_w_socket
+global gt_w_connect
 global gt_w_send_datum_back
 
 
@@ -1271,3 +1272,34 @@ gt_w_socket:
   jmp _make_call
 
 
+gt_w_connect:
+  ; rdi -> worker
+  ; esi -> sockfd
+  ; rdx -> addr
+  ; rcx -> addrlen
+  sub rsp,8
+
+  push rcx
+
+  shl rsi,32
+  or rsi,16 ; connect
+  push rsi
+
+  movdqa xmm0,[rsp]
+
+  xor eax,eax
+  push rax
+  push rdx
+  movdqa xmm1,[rsp]
+
+  push rax
+  push rdi
+  movdqa xmm2,[rsp]
+
+  pxor xmm3,xmm3
+
+  add rsp,56
+
+  jmp _make_call
+
+  
