@@ -1,11 +1,6 @@
 #ifndef GTW_H
 #define GTW_H
 
-#include "rings.h"
-
-#include <sys/socket.h>
-#include <sys/epoll.h>
-#include <unistd.h>
 
 #define GT_BOTTLENECK -128000L
 
