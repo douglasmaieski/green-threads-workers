@@ -71,13 +71,17 @@ global gt_w_fsync
 global gt_w_socket
 global gt_w_connect
 global gt_w_accept
+global gt_w_unlinkat
+global gt_w_nop
 global gt_w_send_datum_back
 
 
 gt_wgm_compute_req_mem:
   ; RDI -> max managers
   ; RSI -> max workers
+  inc rsi
   shl rsi,1
+  inc rdi
   add rdi,rsi
   lea rax,[rdi*8+256]
   ret
@@ -99,7 +103,11 @@ gt_wgm_init:
   mov [rdi+GT_WGM_RINGS_PTR],r8
   mov [rdi+GT_WGM_FUNCTION_PTR],rcx
   mov qword [rdi+GT_WGM_WM_ROUND_IDX],0
+
+  inc rsi
   mov [rdi+GT_WGM_WM_MAX_COUNT],rsi
+
+  inc rdx
   mov [rdi+GT_WGM_W_MAX_COUNT],rdx
 
   ; skip the work managers
@@ -775,7 +783,7 @@ gt_wm_work:
   call rdx
   
 .done:
-  jmp gt_wm_work
+  ret
 
 .handle_new_work_bottleneck:
   ; send to output to be reenqueued
@@ -1264,6 +1272,39 @@ gt_w_accept:
 
   movq xmm2,rdi
 
+  pxor xmm3,xmm3
+
+  jmp _make_call
+
+
+gt_w_unlinkat:
+  ; rdi -> worker
+  ; esi -> dirfd
+  ; rdx -> pathname
+  ; ecx -> flags
+  shl rsi,32
+  or rsi,36 ; unlinkat
+  movq xmm0,rsi
+  
+  movq xmm1,rdx
+  shl rcx,32
+  pinsrq xmm1,rcx,1
+
+  movq xmm2,rdi
+
+  pxor xmm3,xmm3
+
+  jmp _make_call
+
+
+gt_w_nop:
+  ; rdi -> worker
+  mov rsi,1
+  shl rsi,63
+  movq xmm0,rsi
+  
+  pxor xmm1,xmm1
+  movq xmm2,rdi
   pxor xmm3,xmm3
 
   jmp _make_call

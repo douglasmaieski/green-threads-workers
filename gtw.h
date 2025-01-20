@@ -121,6 +121,13 @@ long gt_w_accept(struct gt_w *w,
                  socklen_t *addrlen,
                  int flags);
 
+long gt_w_unlinkat(struct gt_w *w,
+                   int dirfd,
+                   const char *pathname,
+                   int flags);
+
+void gt_w_nop(struct gt_w *w);
+
 
 /* TODO:
 send
